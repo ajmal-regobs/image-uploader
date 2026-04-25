@@ -50,6 +50,17 @@ def init_db():
         cur.execute(schema)
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    try:
+        with get_db() as conn, conn.cursor() as cur:
+            cur.execute("SELECT 1")
+            cur.fetchone()
+        return {"status": "ok"}, 200
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}, 503
+
+
 @app.route("/", methods=["GET"])
 def index():
     with get_db() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
